@@ -5,16 +5,15 @@ interface IExample{
     public function insert($data);
 }
 
-
 class Example implements IExample
 {
-    protected $pdo, $glb;
+    protected $pdo, $rm;
 
     protected $table_name = "item";
 
-    public function __construct(\PDO $pdo, GlobalMethods $glb){
+    public function __construct(\PDO $pdo, ResponseMethods $rm){
         $this->pdo = $pdo;
-        $this->glb = $glb;
+        $this->rm = $rm;
     }
 
     public function hello(){
@@ -33,9 +32,9 @@ class Example implements IExample
             if($stmt->execute()){
                 $data = $stmt->fetchAll();
                 if($stmt->rowCount() >= 1){
-                    return $this->glb->responsePayload($data, "success","Successfully pulled all data", 200);
+                    return $this->rm->responsePayload($data, "success","Successfully pulled all data", 200);
                 }else{
-                    return $this->glb->responsePayload(null, "fauled","No data exisiting", 404);
+                    return $this->rm->responsePayload(null, "fauled","No data exisiting", 404);
                 }
             }
 
@@ -50,9 +49,9 @@ class Example implements IExample
             $stmt = $this->pdo->prepare($sql);
 
             if($stmt->execute([$data->name, $data->price])){
-                return $this->glb->responsePayload(null, "success","Successfully inserted data", 200);
+                return $this->rm->responsePayload(null, "success","Successfully inserted data", 200);
             }else{
-                return $this->glb->responsePayload(null, "failed","Failed to insert data", 400);
+                return $this->rm->responsePayload(null, "failed","Failed to insert data", 400);
             }
         }catch(\PDOException $e){
             echo $e->getMessage();

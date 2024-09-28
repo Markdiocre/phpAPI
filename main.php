@@ -4,7 +4,7 @@ header("Content-Type: application/json; charset=utf-8");
 header("Access-Control-Allow-Methods: GET,POST,PUT,PATCH,DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: X-Requested-With,  Origin, Content-Type,");
 header("Access-Control-Max-Age: 86400");
-// ini_set('display_errors',0);
+
 date_default_timezone_set("Asia/Manila");
 set_time_limit(1000);
 
@@ -21,8 +21,8 @@ $db = new Connection();
 $pdo = $db->connect();
 
 //Model Instantiates
-$global = new GlobalMethods();
-$try = new Example($pdo, $global);
+$rm = new ResponseMethods();
+$try = new Example($pdo, $rm);
 
 $req = [];
 if (isset($_REQUEST['request']))
@@ -31,16 +31,19 @@ else $req = array("errorcatcher");
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        if ($req[0] == 'try') {echo json_encode($try->hello());return;}
-        if($req[0]=='getAllItem'){echo json_encode($try->getAll()); return;}
+        if($req[0]=='try') {echo json_encode($try->hello());return;} // <--Example
+        
+        $rm->notFound();
         break;
     case 'POST':
         $data_input = json_decode(file_get_contents("php://input"));
-        if($req[0] == 'insert'){echo json_encode($try->insert($data_input)); return;}
+        if($req[0] == 'insert'){echo json_encode($try->insert($data_input)); return;} //<--Example
+
+        //This handles non-existing routes
+        $rm->notFound();
         break;
 
     default:
-        echo "albert";
-        http_response_code(403);
+        $rm->notFound();
         break;
 }

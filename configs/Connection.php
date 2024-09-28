@@ -4,6 +4,7 @@ define("SERVER", "localhost");
 define("DBASE", "new_api");
 define("USER", "root");
 define("PASSWORD", "");
+define("SECRET_KEY","yoursecret");
 
 class Connection
 {
