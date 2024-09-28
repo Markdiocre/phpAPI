@@ -2,6 +2,7 @@
 
 interface IExample{
     public function getAll();
+    public function insert($data);
 }
 
 
@@ -41,5 +42,21 @@ class Example implements IExample
         }catch(\PDOException $e){
             echo $e->getMessage();
         }
+    }
+
+    public function insert($data){
+        $sql = "INSERT INTO ".$this->table_name."(name,price) VALUES(?,?)";
+        try{
+            $stmt = $this->pdo->prepare($sql);
+
+            if($stmt->execute([$data->name, $data->price])){
+                return $this->glb->responsePayload(null, "success","Successfully inserted data", 200);
+            }else{
+                return $this->glb->responsePayload(null, "failed","Failed to insert data", 400);
+            }
+        }catch(\PDOException $e){
+            echo $e->getMessage();
+        }
+        return "yo";
     }
 }

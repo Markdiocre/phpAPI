@@ -34,12 +34,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
         if ($req[0] == 'try') {echo json_encode($try->hello());return;}
         if($req[0]=='getAllItem'){echo json_encode($try->getAll()); return;}
         break;
-        // case 'POST':
-        //     $data_input = json_decode(file_get_contents("php://input"));
-        //     require_once($apiPath . '/routes/Try.routes.php');
-        //     require_once($apiPath . '/routes/Auth.routes.php');
-        //     require_once($apiPath . '/routes/Money.routes.php');
-        //     break;
+    case 'POST':
+        $data_input = json_decode(file_get_contents("php://input"));
+        if($req[0] == 'insert'){echo json_encode($try->insert($data_input)); return;}
+        break;
 
     default:
         echo "albert";
