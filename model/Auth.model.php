@@ -21,17 +21,16 @@ class Auth implements AuthInterface
 
     public function login($data){
 
-        $sql = "SELECT * FROM ? WHERE username=?";
+        $sql = "SELECT * FROM ". $this->table_name ." WHERE username = ?";
         try{
             $stmt = $this->pdo->prepare($sql);
-        try {
             $stmt->execute([$data->username]);
             if ($stmt->rowCount() > 0) {
                 $res = $stmt->fetchAll()[0];
                 $stmt->closeCursor();
                 if ($this->checkPassword($data->password, $res['password'])) {
                     $token = $this->tokenGen(); // You can insert any non-sensitive data inside the token 
-                    return $this->gm->responsePayload(array("token"=>$token),"success","Logged in", 200);
+                    return $this->gm->responsePayload($token,"success","Logged in", 200);
                 } else {
                     return $this->gm->responsePayload(null, "failed", "Username and password does not match", 400);
                 }
@@ -40,9 +39,6 @@ class Auth implements AuthInterface
             }
 
             $stmt->closeCursor();
-        } catch (\PDOException $e) {
-            echo $e->getMessage();
-        }
         }catch(\PDOException $e){
             echo $e->getMessage();
         }
@@ -55,11 +51,11 @@ class Auth implements AuthInterface
 
     public function register($data){
         //Username must be unique 
-        $sql = "INSERT INTO ? (username,password) VALUES(?,?)";
+        $sql = "INSERT INTO ".$this->table_name .  " (username,password) VALUES(?,?)";
         try {
             $stmt = $this->pdo->prepare($sql);
             $data->password = $this->encrypt_password($data->password);
-            if ($stmt->execute([$this->table_name, $data->username, $data->password])) {
+            if ($stmt->execute([$data->username, $data->password])) {
                 $status = $stmt->fetch();
                 $stmt->closeCursor();
 
@@ -131,6 +127,4 @@ class Auth implements AuthInterface
             }
         }
     }
-
-
 }
